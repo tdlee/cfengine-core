@@ -127,7 +127,7 @@ libpromises_la_SOURCES = \
 	parser_state.h \
 	patches.c \
 	pipes.h pipes.c \
-	processes_select.c processes_select.h \
+	processes_select.h \
 	process_lib.h process_unix_priv.h \
 	promises.c promises.h \
 	prototypes3.h \
@@ -157,6 +157,15 @@ libpromises_la_SOURCES = \
 	../cf-check/utilities.c ../cf-check/utilities.h
 
 if !NT
+
+# Whether to use traditional "ps" cmd or newer "/proc" to select processes.
+if HAVE_PS_VIA_PROC
+libpromises_la_SOURCES += \
+	processes_select_proc.c
+else
+libpromises_la_SOURCES += \
+	processes_select.c
+endif
 
 libpromises_la_SOURCES += \
 	process_unix.c \
