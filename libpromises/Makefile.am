@@ -159,22 +159,17 @@ libpromises_la_SOURCES = \
 if !NT
 
 # Whether to use traditional "ps" cmd or newer "/proc" to select processes.
+# Note that the newer 'proc' code subsumes previous "process_/OS/.c".
+# When that OS migrates to within HAVE_PS_VIA_PROC:
+#  o  that "process_/OS/.c" file should be removed
+#  o  a corresponding adjustment should be made in "tests/unit/Makefile.am"
 if HAVE_PS_VIA_PROC
 libpromises_la_SOURCES += \
+	process_proc.c \
 	processes_select_proc.c
 else
 libpromises_la_SOURCES += \
 	processes_select.c
-endif
-
-libpromises_la_SOURCES += \
-	process_unix.c \
-	pipes_unix.c
-
-if LINUX
-libpromises_la_SOURCES += \
-	process_linux.c
-endif
 
 if AIX
 libpromises_la_SOURCES += \
@@ -196,6 +191,8 @@ libpromises_la_SOURCES += \
 	process_freebsd.c
 endif
 
+endif # HAVE_PS_VIA_PROC
+
 if !LINUX
 if !AIX
 if !HPUX
@@ -208,6 +205,10 @@ endif
 endif
 endif
 endif
+
+libpromises_la_SOURCES += \
+	process_unix.c \
+	pipes_unix.c
 
 endif # !NT
 
