@@ -1,16 +1,16 @@
 /*
-   Copyright 2019 Northern.tech AS
+  Copyright 2019 Northern.tech AS
 
-   This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
+  This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
 
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the
-   Free Software Foundation; version 3.
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation; version 3.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
@@ -24,6 +24,9 @@
 
 #ifndef CFENGINE_DBM_API_H
 #define CFENGINE_DBM_API_H
+
+#define EC_CORRUPTION_REPAIRED 120
+#define EC_CORRUPTION_REPAIR_FAILED 121
 
 #include <map.h>
 
@@ -80,6 +83,7 @@ bool DeleteComplexKeyDB(CF_DB *dbp, const char *key, int size);
 bool ReadDB(CF_DB *dbp, const char *key, void *dest, int destSz);
 bool WriteDB(CF_DB *dbp, const char *key, const void *src, int srcSz);
 bool DeleteDB(CF_DB *dbp, const char *key);
+void FreezeDB(DBHandle *handle);
 
 /*
  * Creating cursor locks the whole database, so keep the amount of work here to
@@ -99,4 +103,6 @@ char *DBIdToPath(dbid id);
 char *DBIdToSubPath(dbid id, const char *subdb_name);
 
 StringMap *LoadDatabaseToStringMap(dbid database_id);
+
+bool CheckDBRepairFlagFile();
 #endif  /* NOT CFENGINE_DBM_API_H */

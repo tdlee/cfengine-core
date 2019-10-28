@@ -1,16 +1,16 @@
 /*
-   Copyright 2019 Northern.tech AS
+  Copyright 2019 Northern.tech AS
 
-   This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
+  This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
 
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the
-   Free Software Foundation; version 3.
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation; version 3.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
@@ -41,6 +41,7 @@
 #include <printsize.h>
 #include <cleanup.h>
 #include <repair.h>
+#include <dbm_api.h>            /* CheckDBRepairFlagFile() */
 #include <string_lib.h>
 
 #include <cf-windows-functions.h>
@@ -135,9 +136,10 @@ static const char *const HINTS[] =
 int main(int argc, char *argv[])
 {
     GenericAgentConfig *config = CheckOpts(argc, argv);
-    if (PERFORM_DB_CHECK)
+    bool force_repair = CheckDBRepairFlagFile();
+    if (force_repair || PERFORM_DB_CHECK)
     {
-        repair_lmdb_default();
+        repair_lmdb_default(force_repair);
     }
 
     EvalContext *ctx = EvalContextNew();
@@ -430,6 +432,7 @@ void StartServer(EvalContext *ctx, Policy *policy, GenericAgentConfig *config, E
     WritePID("cf-execd.pid");
     signal(SIGINT, HandleSignalsForDaemon);
     signal(SIGTERM, HandleSignalsForDaemon);
+    signal(SIGBUS, HandleSignalsForDaemon);
     signal(SIGHUP, HandleSignalsForDaemon);
     signal(SIGPIPE, SIG_IGN);
     signal(SIGUSR1, HandleSignalsForDaemon);

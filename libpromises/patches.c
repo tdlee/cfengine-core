@@ -1,16 +1,16 @@
 /*
-   Copyright 2019 Northern.tech AS
+  Copyright 2019 Northern.tech AS
 
-   This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
+  This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
 
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the
-   Free Software Foundation; version 3.
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation; version 3.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
@@ -214,75 +214,3 @@ bool LinkOrCopy(const char *from, const char *to, int sym)
 
     return true;
 }
-
-#if !defined(__MINGW32__)
-
-static int LockFile(int fd, short int lock_type, bool wait)
-{
-    struct flock lock = {
-        .l_type = lock_type,
-        .l_whence = SEEK_SET,
-        .l_start = 0, /* start of the region to which the lock applies */
-        .l_len = 0    /* till EOF */
-    };
-
-    if (wait)
-    {
-        while (fcntl(fd, F_SETLKW, &lock) == -1)
-        {
-            if (errno != EINTR)
-            {
-                return -1;
-            }
-        }
-        return 0;
-    }
-    else
-    {
-        int ret = fcntl(fd, F_SETLK, &lock);
-        /* make sure we only return -1 or 0 like block above */
-        return ret == -1 ? -1 : 0;
-    }
-}
-
-int ExclusiveLockFile(int fd, bool wait)
-{
-    return LockFile(fd, F_WRLCK, wait);
-}
-
-int SharedLockFile(int fd, bool wait)
-{
-    return LockFile(fd, F_RDLCK, wait);
-}
-
-/**
- * Check if we are holding an exclusive lock for the fd.
- */
-bool ExclusiveLockFileCheck(int fd)
-{
-    struct flock lock = {
-        .l_type = F_WRLCK,
-        .l_whence = SEEK_SET,
-        .l_start = 0, /* start of the region to which the lock applies */
-        .l_len = 0    /* till EOF */
-    };
-    if (fcntl(fd, F_GETLK, &lock) == -1)
-    {
-        /* should never happen */
-        Log(LOG_LEVEL_ERR, "Error when checking locks on FD %d", fd);
-        return false;
-    }
-    return (lock.l_type != F_UNLCK);
-}
-
-int ExclusiveUnlockFile(int fd)
-{
-    return close(fd);
-}
-
-int SharedUnlockFile(int fd)
-{
-    return close(fd);
-}
-
-#endif

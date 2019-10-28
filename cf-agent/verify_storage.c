@@ -1,16 +1,16 @@
 /*
-   Copyright 2019 Northern.tech AS
+  Copyright 2019 Northern.tech AS
 
-   This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
+  This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
 
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the
-   Free Software Foundation; version 3.
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation; version 3.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
@@ -391,7 +391,7 @@ static bool FileSystemMountedCorrectly(Seq *list, char *name, const Attributes *
 /*********************************************************************/
 
 static bool IsForeignFileSystem(struct stat *childstat, char *dir)
- /* Is FS NFS mounted ? */
+// Is file system NFS / PanFS / CIFS mounted ?
 {
     struct stat parentstat;
     char vbuff[CF_BUFSIZE];
@@ -424,7 +424,10 @@ static bool IsForeignFileSystem(struct stat *childstat, char *dir)
 
             if (!strcmp(entry->mounton, dir))
             {
-                if ((entry->options) && (strstr(entry->options, "nfs")))
+                if ((entry->options != NULL)
+                    && ((strstr(entry->options, "nfs") != NULL)
+                        || (strstr(entry->options, "panfs") != NULL)
+                        || (strstr(entry->options, "cifs") != NULL)))
                 {
                     return true;
                 }

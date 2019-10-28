@@ -1,16 +1,16 @@
 /*
-   Copyright 2019 Northern.tech AS
+  Copyright 2019 Northern.tech AS
 
-   This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
+  This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
 
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the
-   Free Software Foundation; version 3.
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation; version 3.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
@@ -84,6 +84,7 @@
 #include <string_lib.h>
 #include <cfnet.h>
 #include <repair.h>
+#include <dbm_api.h>                    /* CheckDBRepairFlagFile() */
 #include <sys/types.h>                  /* checking umask on writing setxid log */
 #include <sys/stat.h>                   /* checking umask on writing setxid log */
 
@@ -244,9 +245,10 @@ int main(int argc, char *argv[])
     struct timespec start = BeginMeasure();
 
     GenericAgentConfig *config = CheckOpts(argc, argv);
-    if (PERFORM_DB_CHECK)
+    bool force_repair = CheckDBRepairFlagFile();
+    if (force_repair || PERFORM_DB_CHECK)
     {
-        repair_lmdb_default();
+        repair_lmdb_default(force_repair);
     }
     EvalContext *ctx = EvalContextNew();
 

@@ -1,16 +1,16 @@
 /*
-   Copyright 2019 Northern.tech AS
+  Copyright 2019 Northern.tech AS
 
-   This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
+  This file is part of CFEngine 3 - written and maintained by Northern.tech AS.
 
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the
-   Free Software Foundation; version 3.
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation; version 3.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
@@ -21,11 +21,11 @@
   (COSL) may apply to this file if you as a licensee so wish it. See
   included file COSL.txt.
 */
+
+#include <platform.h>
 #include <tokyo_check.h>
 
-#ifdef HAVE_CONFIG_H
-#include  <config.h>
-#endif
+#ifdef TCDB
 
 #include <array_map_priv.h>
 #include <hash_map_priv.h>
@@ -33,8 +33,6 @@
 #include <string_lib.h>
 #include <logging.h>
 #include <cf3.defs.h>
-
-#ifdef TCDB
 
 /*
  * The idea behind the following code comes from : copiousfreetime@github
@@ -480,8 +478,12 @@ int CheckTokyoDBCoherence(const char *path)
 }
 
 #else
+
+#include <compiler.h> // ARG_UNUSED
+
 int CheckTokyoDBCoherence(ARG_UNUSED const char *path)
 {
   return 0;
 }
+
 #endif
